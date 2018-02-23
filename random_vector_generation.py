@@ -1,8 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-mean_X1 = np.array([3, 1, 4])
-mean2_X2 = np.array([-3,1,-4])
+print("Please give mean for first class in this format a,b,c")
+m1 = input()
+m1 = np.asarray(m1)
+
+print("Please give mean for second class in this format a,b,c")
+m2 = input()
+m2 = np.asarray(m2)
+mean_X1 = m1
+mean2_X2 = m2
 
 
 def generate_sigma1():
@@ -42,14 +49,13 @@ def generate_Z():
 
     return z_vectors
 
-print("This is z:", generate_Z())
 
 def generation_Of_X1():
     z_vectors = generate_Z()
 
     sigma1 = generate_sigma1()
 
-    mean_X1 = np.array([3, 1, 4])
+    mean_X1 = m1
 
     # Eigen values and Eigen vectors of sigma1
     lambda_def1, Px1 = (np.linalg.eig(sigma1))
@@ -70,7 +76,7 @@ def generation_Of_X2():
                        [alpha*b*c, b*b, alpha* a * b],
                        [beta *a *c, alpha *a *b, a * a]])
 
-    mean2_X2 = np.array([-3, 1, -4])
+    mean2_X2 = m2
 
     # Eigen values and Eigen vectors of sigma1
     lambda_def2, Px2 = (np.linalg.eig(sigma2))
@@ -81,23 +87,23 @@ def generation_Of_X2():
 
 def generate_points(M):
     X = np.array([])
-    for i in range(0,5000):
+    for i in range(0,200):
         if(M == 1):
             temp = generation_Of_X1()
         elif(M == 2):
             temp = generation_Of_X2()
         X = np.append(X, temp)
-    X = X.reshape(5000,3)
+    X = X.reshape(200,3)
     print(X.shape)
     return X
 
 
-print("This is 5000 points of X1:")
+'''print("This is 5000 points of X1:")
 X1 = generate_points(1)
 print (X1)
 print("This is 5000 points of X2:")
 X2 = generate_points(2)
-print (X2)
+print (X2) '''
 
 # generation of Y1 and Y2
 def generation_of_Y1():
@@ -149,13 +155,13 @@ def generation_of_Y2():
     return y2
 
 
-print("This is 5000 points of Y1:")
+'''print("This is 5000 points of Y1:")
 Y1 = generation_of_Y1()
 print (Y1)
 
 print("This is 5000 points of Y2:")
 Y2 = generation_of_Y2()
-print (Y2)
+print (Y2) '''
 
 # generation of Z1 and Z2
 def generation_of_Z1():
@@ -215,13 +221,13 @@ def generation_of_Z2():
     print("eigen vectors of Z2:", eigenvector_Z2)
     return z2
 
-print("This is 5000 points of Z1:")
+'''print("This is 5000 points of Z1:")
 Z1 = generation_of_Z1()
 print (Z1)
 
 print("This is 2000 points of Z2:")
 Z2 = generation_of_Z2()
-print (Z2)
+print (Z2) '''
 
 
 # generation of V1 and V2
@@ -285,13 +291,13 @@ def generation_of_V2():
     return v2
 
 
-print("This is 5000 points of V1:")
+'''print("This is 5000 points of V1:")
 V1 = generation_of_V1()
 print (V1)
 
 print("This is 5000 points of V2:")
 V2 = generation_of_V2()
-print (V2)
+print (V2) '''
 
 
 def slicing_points(X1, X2):
@@ -422,8 +428,6 @@ def generate_plot():
     plt.show()
 
 
-generate_plot()
-
 def generate_POverall():
     sigma1 = generate_sigma1()  # cov of x1
     lambda_def, Px1 = (np.linalg.eig(sigma1))  # 1st- eigval, 2nd - eigvec
@@ -442,8 +446,5 @@ def generate_POverall():
 
     return P_overall
 
-P_overall = generate_POverall()
-print("This is P_overall:", P_overall)
-
-
-#print("This is 2000 points of X2:", generate_points(2))
+'''P_overall = generate_POverall()
+print("This is P_overall:", P_overall) '''
