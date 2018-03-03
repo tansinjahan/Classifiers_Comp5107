@@ -1,15 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-print("Please give mean for first class in this format a,b,c")
-m1 = input()
-m1 = np.asarray(m1)
+def mean_input():
+    print("Please give mean for first class in this format x,y,z")
+    m1 = input()
+    m1 = np.asarray(m1)
 
-print("Please give mean for second class in this format a,b,c")
-m2 = input()
-m2 = np.asarray(m2)
-mean_X1 = m1
-mean2_X2 = m2
+    print("Please give mean for second class in this format x,y,z")
+    m2 = input()
+    m2 = np.asarray(m2)
+    return m1,m2
+
+mean_X1, mean2_X2 = mean_input()
 
 
 def generate_sigma1():
@@ -55,7 +57,7 @@ def generation_Of_X1():
 
     sigma1 = generate_sigma1()
 
-    mean_X1 = m1
+    #   mean_X1 = m1
 
     # Eigen values and Eigen vectors of sigma1
     lambda_def1, Px1 = (np.linalg.eig(sigma1))
@@ -65,18 +67,9 @@ def generation_Of_X1():
 
 def generation_Of_X2():
     z_vectors = generate_Z()
+    sigma2 = generate_sigma2()
 
-    a = 2
-    b = 3
-    c = 4
-    alpha = 0.1
-    beta = 0.2
-
-    sigma2 = np.array([[c*c, alpha *b *c, beta *a * c],
-                       [alpha*b*c, b*b, alpha* a * b],
-                       [beta *a *c, alpha *a *b, a * a]])
-
-    mean2_X2 = m2
+    # mean2_X2 = m2
 
     # Eigen values and Eigen vectors of sigma1
     lambda_def2, Px2 = (np.linalg.eig(sigma2))
@@ -98,12 +91,12 @@ def generate_points(M):
     return X
 
 
-'''print("This is 5000 points of X1:")
+#print("This is 5000 points of X1:")
 X1 = generate_points(1)
-print (X1)
-print("This is 5000 points of X2:")
+#print (X1)
+#print("This is 5000 points of X2:")
 X2 = generate_points(2)
-print (X2) '''
+#print (X2)
 
 # generation of Y1 and Y2
 def generation_of_Y1():
@@ -155,13 +148,13 @@ def generation_of_Y2():
     return y2
 
 
-'''print("This is 5000 points of Y1:")
+#print("This is 5000 points of Y1:")
 Y1 = generation_of_Y1()
-print (Y1)
+#print (Y1)
 
-print("This is 5000 points of Y2:")
+#print("This is 5000 points of Y2:")
 Y2 = generation_of_Y2()
-print (Y2) '''
+#print (Y2)
 
 # generation of Z1 and Z2
 def generation_of_Z1():
@@ -221,13 +214,13 @@ def generation_of_Z2():
     print("eigen vectors of Z2:", eigenvector_Z2)
     return z2
 
-'''print("This is 5000 points of Z1:")
+#print("This is 5000 points of Z1:")
 Z1 = generation_of_Z1()
-print (Z1)
+#print (Z1)
 
-print("This is 2000 points of Z2:")
+#print("This is 2000 points of Z2:")
 Z2 = generation_of_Z2()
-print (Z2) '''
+#print (Z2) '''
 
 
 # generation of V1 and V2
@@ -259,7 +252,7 @@ def generation_of_V1():
 
     covariance_of_V1 = np.dot(np.dot(Pz2_transpose,I),Pz2)
     print ("The covariance of V1:", covariance_of_V1)
-    return v1
+    return mean_V1,covariance_of_V1,v1
 
 
 def generation_of_V2():
@@ -288,16 +281,16 @@ def generation_of_V2():
     covariance_of_V2 = np.dot(np.dot(Pz2_transpose, covariance_of_Z2), Pz2)
     print ("The covariance of V2:", covariance_of_V2)
 
-    return v2
+    return mean_V2,covariance_of_V2,v2
 
 
-'''print("This is 5000 points of V1:")
+#print("This is 5000 points of V1:")
 V1 = generation_of_V1()
-print (V1)
+#print (V1)
 
-print("This is 5000 points of V2:")
+#print("This is 5000 points of V2:")
 V2 = generation_of_V2()
-print (V2) '''
+#print (V2)
 
 
 def slicing_points(X1, X2):
