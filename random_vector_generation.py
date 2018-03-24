@@ -78,25 +78,17 @@ def generation_Of_X2():
     return np.dot(np.dot(Px2, lambda_to_the_powerHalf), z_vectors) + mean2_X2
 
 
-def generate_points(M):
+def generate_points(M,totalPoints):
     X = np.array([])
-    for i in range(0,200):
+    for i in range(0,totalPoints):
         if(M == 1):
             temp = generation_Of_X1()
         elif(M == 2):
             temp = generation_Of_X2()
         X = np.append(X, temp)
-    X = X.reshape(200,3)
+    X = X.reshape(totalPoints,3)
     print(X.shape)
     return X
-
-
-#print("This is 5000 points of X1:")
-X1 = generate_points(1)
-#print (X1)
-#print("This is 5000 points of X2:")
-X2 = generate_points(2)
-#print (X2)
 
 # generation of Y1 and Y2
 def generation_of_Y1():
@@ -146,15 +138,6 @@ def generation_of_Y2():
     print("eigen values of  Y2:", eigenvalue_Y2)
     print("eigen vectors of Y2:", eigenvector_Y2)
     return y2
-
-
-#print("This is 5000 points of Y1:")
-Y1 = generation_of_Y1()
-#print (Y1)
-
-#print("This is 5000 points of Y2:")
-Y2 = generation_of_Y2()
-#print (Y2)
 
 # generation of Z1 and Z2
 def generation_of_Z1():
@@ -213,15 +196,6 @@ def generation_of_Z2():
     print("eigen values of Z2:", eigenvalue_Z2)
     print("eigen vectors of Z2:", eigenvector_Z2)
     return z2
-
-#print("This is 5000 points of Z1:")
-Z1 = generation_of_Z1()
-#print (Z1)
-
-#print("This is 2000 points of Z2:")
-Z2 = generation_of_Z2()
-#print (Z2) '''
-
 
 # generation of V1 and V2
 
@@ -282,16 +256,6 @@ def generation_of_V2():
     print ("The covariance of V2:", covariance_of_V2)
 
     return mean_V2,covariance_of_V2,v2
-
-
-#print("This is 5000 points of V1:")
-V1 = generation_of_V1()
-#print (V1)
-
-#print("This is 5000 points of V2:")
-V2 = generation_of_V2()
-#print (V2)
-
 
 def slicing_points(X1, X2):
     X1_0_1 = X1[:,[0,1]] # X1 - X2
@@ -439,5 +403,3 @@ def generate_POverall():
 
     return P_overall
 
-'''P_overall = generate_POverall()
-print("This is P_overall:", P_overall) '''
