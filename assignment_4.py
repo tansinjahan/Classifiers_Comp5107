@@ -46,6 +46,7 @@ def generate_plot_for_X(plotX1,plotX2):
 
 generate_plot_for_X(X1,X2)
 
+# Answer to question (b)
 def estimateMean_for_ML(Name_Of_class,points):
 
     summation = np.array([])
@@ -165,88 +166,186 @@ plot_convergences(array_Plot_BL_ConvergeMean_X2)
 #Answer of part(C)
 def parzen_window_calculate(Name_of_class,points,sigma):
     className = Name_of_class;
-    divisor = float(points)
-    first_feature = className[:,0]
-    first_feature_j = np.array([])
-    second_feature = className[:,1]
-    second_feature_j = np.array([])
-    third_feature = className[:,2]
-    third_feature_j = np.array([])
+    sample_points_first = className[:, 0]
+    l1 = sample_points_first.size
+    sample_points_second = className[:,1]
+    l2 = sample_points_second.size
+    sample_points_third = className[:, 2]
+    l3 = sample_points_third.size
+
     f_x_1 = np.array([])
     f_x_2 = np.array([])
     f_x_3 = np.array([])
 
-    for i in range(0,points,5):
-        first_feature_j = np.append(first_feature_j, first_feature[i])
-        second_feature_j = np.append(second_feature_j,second_feature[i])
-        third_feature_j = np.append(third_feature_j,third_feature[i])
+    print("Please give input of which class:")
+    class_type = input()
+    if class_type ==1:
+        print("Give input the number of points")
+        points = input()
+        random_X1 = gn.generate_points(1, points)
+    else:
+        print("Give input the number of points")
+        points = input()
+        random_X1 = gn.generate_points(2, points)
 
-    #print("this is first feature:", first_feature_j)
-    #print("this is second feature:", second_feature_j)
-    #print("this is third feature:", third_feature_j)
-    l1 = first_feature_j.size
-    l2 = second_feature_j.size
-    l3 = third_feature_j.size
-    for x in first_feature_j:
-        temp = 0;
-        for i in range(0,points):
-            if first_feature[i] != x:
-                temp1 = 1.0/(np.sqrt(2*3.1416)*sigma)
-                temp2 = np.power((x - first_feature[i]), 2)
-                temp3 = 2*np.power(sigma,2)
-                temp4 = np.exp(-1.0*(temp2/temp3))
-                temp5 = temp4*temp1
-                temp =temp5 +temp
-            else:
-                continue
-        temp = temp/divisor
+
+    random_X1_first = random_X1[:,0]
+    random_X1_second = random_X1[:,1]
+    random_X1_third = random_X1[:,2]
+
+    #print("random points and sample points:",random_points_first,sample_points_first)
+
+    for i in random_X1_first:
+        temp = 0
+        for x in sample_points_first:
+                temp1 = 1.0 / (np.sqrt(2 * 3.1416) * sigma)
+                temp2 = np.power((i-x), 2)
+                temp3 = 2 * np.power(sigma, 2)
+                temp4 = np.exp(-1.0 * (temp2 / temp3))
+                temp5 = temp4 * temp1
+                temp = temp5 + temp
+        temp = temp / l1
         f_x_1 = np.append(f_x_1, temp)
 
-    for x in second_feature_j:
-        temp = 0;
-        for i in range(0, points):
-            if second_feature[i] != x:
-                temp1 = 1.0 / (np.sqrt(2 * 3.1416) * sigma)
-                temp2 = np.power((x - second_feature[i]), 2)
-                temp3 = 2 * np.power(sigma, 2)
-                temp4 = np.exp(-1.0 * (temp2 / temp3))
-                temp5 = temp4 * temp1
-                temp = temp5 + temp
-            else:
-                continue
-        temp = temp / divisor
+
+    for i in random_X1_second:
+        temp = 0
+        for x in sample_points_second:
+            temp1 = 1.0 / (np.sqrt(2 * 3.1416) * sigma)
+            temp2 = np.power((i - x), 2)
+            temp3 = 2 * np.power(sigma, 2)
+            temp4 = np.exp(-1.0 * (temp2 / temp3))
+            temp5 = temp4 * temp1
+            temp = temp5 + temp
+        temp = temp / l2
         f_x_2 = np.append(f_x_2, temp)
 
-    for x in third_feature_j:
-        temp = 0;
-        for i in range(0, points):
-            if third_feature[i] != x:
-                temp1 = 1.0 / (np.sqrt(2 * 3.1416) * sigma)
-                temp2 = np.power((x - third_feature[i]), 2)
-                temp3 = 2 * np.power(sigma, 2)
-                temp4 = np.exp(-1.0 * (temp2 / temp3))
-                temp5 = temp4 * temp1
-                temp = temp5 + temp
-            else:
-                continue
-        temp = temp / divisor
+    for i in random_X1_third:
+        temp = 0
+        for x in sample_points_third:
+            temp1 = 1.0 / (np.sqrt(2 * 3.1416) * sigma)
+            temp2 = np.power((i - x), 2)
+            temp3 = 2 * np.power(sigma, 2)
+            temp4 = np.exp(-1.0 * (temp2 / temp3))
+            temp5 = temp4 * temp1
+            temp = temp5 + temp
+        temp = temp / l3
         f_x_3 = np.append(f_x_3, temp)
 
-    return f_x_1,f_x_2,f_x_3,first_feature_j,second_feature_j,third_feature_j,dis_m1,dis_m2,dis_m3
+    return f_x_1,f_x_2,f_x_3,random_X1_first,random_X1_second,random_X1_third,random_X1
 
-f_x_1,f_x_2,f_x_3,first_feature_j,second_feature_j,third_feature_j,dis_m1,dis_m2,dis_m3 = parzen_window_calculate(X1,points,0.8)
+f_x_1,f_x_2,f_x_3,random_X1_first,random_X1_second,random_X1_third,random_points_X1 = parzen_window_calculate(X1,points,0.7)
+f_x2_1,f_x2_2,f_x2_3,random_X2_first,random_X2_second,random_X2_third,random_points_X2 = parzen_window_calculate(X2,points,0.5)
+m1_X1 = np.argmax(f_x_1)
+m2_X1 = np.argmax(f_x_2)
+m3_X1 = np.argmax(f_x_3)
 
-print("This is Mean for first distribution", dis_m1)
-print("This is Mean for second distribution", dis_m2)
-print("This is Mean for third distribution", dis_m3)
-plt.scatter(first_feature_j,f_x_1)
+m1_X2 = np.argmax(f_x2_1)
+m2_X2 = np.argmax(f_x2_2)
+m3_X2 = np.argmax(f_x2_3)
+
+print("This is mean for first distribution of class X1",random_X1_first[m1_X1])
+print("This is Mean for second distribution of class X1", random_X1_second[m2_X1])
+print("This is Mean for third distribution of class X1", random_X1_third[m3_X1])
+
+plt.scatter(random_X1_first,f_x_1)
+plt.scatter(random_X1_second,f_x_2)
+plt.scatter(random_X1_third,f_x_3)
 plt.show()
-plt.scatter(second_feature_j,f_x_2)
+
+print("This is mean for first distribution of class X2",random_X2_first[m1_X2])
+print("This is Mean for second distribution of class X2", random_X2_second[m2_X2])
+print("This is Mean for third distribution of class X2", random_X2_third[m3_X2])
+
+plt.scatter(random_X2_first,f_x2_1)
+plt.scatter(random_X2_second,f_x2_2)
+plt.scatter(random_X2_third,f_x2_3)
 plt.show()
-plt.scatter(third_feature_j,f_x_3)
-plt.show()
 
+#Answer to the question no(d)
 
+#for ML - Optimal Bayes Discriminant
+def beforeDiag_a_b_c():
+    inverse_sigma1 = np.linalg.inv(est_MLcovariance_X1)
+    inverse_sigma2 = np.linalg.inv(est_MLcovariance_X2)
 
+    a = (inverse_sigma2 - inverse_sigma1)/2
+
+    for_b1 = np.dot(np.transpose(est_MLmean_X1),inverse_sigma1)
+    for_b2 = np.dot(np.transpose(est_MLmean_X2),inverse_sigma2)
+
+    b = for_b1 - for_b2
+
+    for_c1 = np.log(1)
+    for_c2 = np.log(np.linalg.det(est_MLcovariance_X2)/np.linalg.det(est_MLcovariance_X1))
+
+    c = for_c1 +for_c2
+
+    return a,b,c
+
+be_A,be_B,be_C = beforeDiag_a_b_c()
+
+def discriminant_function_X1X3(A,B,C):
+    root1 = np.array([])
+    root2 = np.array([])
+    points_x1 = np.array([])
+
+    for x1 in np.arange(-15,10,0.1):
+        #for X1 - X3 domain
+        p = A[2][2]
+        q = ((A[0][2] * x1)+ (A[2][0] * x1) +B[2])
+        r = A[0][0] * x1 *x1 + B[0] * x1 + C
+
+        coef_array = np.array([p,q,r])
+        r1, r2 = np.roots(coef_array)
+
+        root1 = np.append(root1,r1)
+        root2 = np.append(root2,r2)
+        points_x1 = np.append(points_x1,[x1])
+
+    return root1,root2,points_x1
+
+Root1,Root2,Points_X1_X3 = discriminant_function_X1X3(be_A,be_B,be_C)
+
+def discriminant_function_X1X2(A,B,C):
+    root1 = np.array([])
+    root2 = np.array([])
+    points_x1 = np.array([])
+
+    for x1 in np.arange(-15, 20, 0.1):
+        # for X1 - X2 domain
+        m = A[1][1]
+        n = ((A[0][1] * x1) + (A[1][0] * x1) + B[1])
+        o = A[0][0] * x1 * x1 + B[0] * x1 + C
+
+        coef_array = np.array([m, n, o])
+        r1, r2 = np.roots(coef_array)
+
+        root1 = np.append(root1, r1)
+        root2 = np.append(root2, r2)
+        points_x1 = np.append(points_x1, [x1])
+
+    return root1, root2, points_x1
+
+Root3,Root4,Points_X1_X2 = discriminant_function_X1X2(be_A,be_B,be_C)
+
+def generate_plot_for_discriminant_func(plotX1,plotX2,root1,root2,points_x_y):
+    X1_0_1, X1_0_2, X2_0_1, X2_0_2 = gn.slicing_points(plotX1, plotX2)
+
+    # To plot X1_X2 domain of X
+
+    plt.scatter(X1_0_1[:, [0]], X1_0_1[:, [1]], c='red')
+    plt.scatter(X2_0_1[:, [0]], X2_0_1[:, [1]], c='blue')
+    plt.scatter(points_x_y[:], root2[:], c='green')
+    plt.scatter(points_x_y[:], root1[:], c='green')
+
+    plt.xlabel("X1")
+    plt.ylabel("X2")
+
+    plt.title("X1 - X2 domain")
+    plt.show()
+
+generate_plot_for_discriminant_func(X1,X2,Root3,Root4,Points_X1_X2)
+generate_plot_for_discriminant_func(X1,X2,Root2,Root1,Points_X1_X3)
 
 

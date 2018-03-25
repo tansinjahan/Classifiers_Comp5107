@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 import random_vector_generation as gn
 
 # For question (A)
-print("This is 200 points of X1:")
-X1 = gn.generate_points(1)
+print("Please give input of how many points:")
+points = input()
+print("This is points of X1:")
+X1 = gn.generate_points(1,points)
 
 print("This is 200 points of X2:")
-X2 = gn.generate_points(2)
+X2 = gn.generate_points(2,points)
 
 
 mean_V1,covariance_V1,V1 = gn.generation_of_V1()
