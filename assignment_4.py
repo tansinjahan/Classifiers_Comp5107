@@ -167,12 +167,15 @@ plot_convergences(array_Plot_BL_ConvergeMean_X2)
 def parzen_window_calculate(Name_of_class,points,sigma):
     className = Name_of_class;
     sample_points_first = className[:, 0]
+    sample_points_first = np.sort(sample_points_first)
     l1 = sample_points_first.size
     sample_points_second = className[:,1]
+    sample_points_second = np.sort(sample_points_second)
     l2 = sample_points_second.size
     sample_points_third = className[:, 2]
+    sample_points_third = np.sort(sample_points_third)
     l3 = sample_points_third.size
-
+    
     f_x_1 = np.array([])
     f_x_2 = np.array([])
     f_x_3 = np.array([])
@@ -190,13 +193,18 @@ def parzen_window_calculate(Name_of_class,points,sigma):
 
 
     random_X1_first = random_X1[:,0]
+    random_X1_first = np.sort(random_X1_first)
     random_X1_second = random_X1[:,1]
+    random_X1_second = np.sort(random_X1_second)
     random_X1_third = random_X1[:,2]
+    random_X1_third = np.sort(random_X1_third)
 
     #print("random points and sample points:",random_points_first,sample_points_first)
-
+    del_x = 0
+    ex_mean = 0
     for i in random_X1_first:
         temp = 0
+
         for x in sample_points_first:
                 temp1 = 1.0 / (np.sqrt(2 * 3.1416) * sigma)
                 temp2 = np.power((i-x), 2)
@@ -205,8 +213,10 @@ def parzen_window_calculate(Name_of_class,points,sigma):
                 temp5 = temp4 * temp1
                 temp = temp5 + temp
         temp = temp / l1
+        del_x = temp -del_x
+        ex_mean = ex_mean + del_x * temp * i
+        print("This is expexted mean", ex_mean)
         f_x_1 = np.append(f_x_1, temp)
-
 
     for i in random_X1_second:
         temp = 0
@@ -265,25 +275,23 @@ plt.show()
 #Answer to the question no(d)
 
 #for ML - Optimal Bayes Discriminant
-def beforeDiag_a_b_c():
-    inverse_sigma1 = np.linalg.inv(est_MLcovariance_X1)
-    inverse_sigma2 = np.linalg.inv(est_MLcovariance_X2)
+def beforeDiag_a_b_c(est_mean_X1,est_mean_X2,est_cov_X1,est_cov_X2):
+    inverse_sigma1 = np.linalg.inv(est_cov_X1)
+    inverse_sigma2 = np.linalg.inv(est_cov_X2)
 
     a = (inverse_sigma2 - inverse_sigma1)/2
 
-    for_b1 = np.dot(np.transpose(est_MLmean_X1),inverse_sigma1)
-    for_b2 = np.dot(np.transpose(est_MLmean_X2),inverse_sigma2)
+    for_b1 = np.dot(np.transpose(est_mean_X1),inverse_sigma1)
+    for_b2 = np.dot(np.transpose(est_mean_X2),inverse_sigma2)
 
     b = for_b1 - for_b2
 
     for_c1 = np.log(1)
-    for_c2 = np.log(np.linalg.det(est_MLcovariance_X2)/np.linalg.det(est_MLcovariance_X1))
+    for_c2 = np.log(np.linalg.det(est_cov_X2)/np.linalg.det(est_cov_X1))
 
     c = for_c1 +for_c2
 
     return a,b,c
-
-be_A,be_B,be_C = beforeDiag_a_b_c()
 
 def discriminant_function_X1X3(A,B,C):
     root1 = np.array([])
@@ -305,8 +313,6 @@ def discriminant_function_X1X3(A,B,C):
 
     return root1,root2,points_x1
 
-Root1,Root2,Points_X1_X3 = discriminant_function_X1X3(be_A,be_B,be_C)
-
 def discriminant_function_X1X2(A,B,C):
     root1 = np.array([])
     root2 = np.array([])
@@ -327,25 +333,43 @@ def discriminant_function_X1X2(A,B,C):
 
     return root1, root2, points_x1
 
-Root3,Root4,Points_X1_X2 = discriminant_function_X1X2(be_A,be_B,be_C)
+ML_A,ML_B,ML_C = beforeDiag_a_b_c(est_MLmean_X1,est_MLmean_X2,est_MLcovariance_X1,est_MLcovariance_X2)
+Root1_ml,Root2_ml,Points_X1_X3_ml = discriminant_function_X1X3(ML_A,ML_B,ML_C)
+Root3_ml,Root4_ml,Points_X1_X2_ml = discriminant_function_X1X2(ML_A,ML_B,ML_C)
 
-def generate_plot_for_discriminant_func(plotX1,plotX2,root1,root2,points_x_y):
+BL_A,BL_B,BL_C = beforeDiag_a_b_c(est_mean_BL_X1,est_mean_BL_X2,actual_sigma1,actual_sigma2)
+Root1_Bl,Root2_Bl,Points_X1_X3_Bl = discriminant_function_X1X3(BL_A,BL_B,BL_C)
+Root3_Bl,Root4_Bl,Points_X1_X2_Bl = discriminant_function_X1X2(BL_A,BL_B,BL_C)
+
+def generate_plot_for_discriminant_func(plotX1,plotX2,Root3,Root4,Points_X1_X2,Root2,Root1,Points_X1_X3):
     X1_0_1, X1_0_2, X2_0_1, X2_0_2 = gn.slicing_points(plotX1, plotX2)
 
     # To plot X1_X2 domain of X
 
     plt.scatter(X1_0_1[:, [0]], X1_0_1[:, [1]], c='red')
     plt.scatter(X2_0_1[:, [0]], X2_0_1[:, [1]], c='blue')
-    plt.scatter(points_x_y[:], root2[:], c='green')
-    plt.scatter(points_x_y[:], root1[:], c='green')
+    plt.scatter(Points_X1_X2[:], Root4[:], c='green')
+    plt.scatter(Points_X1_X2[:], Root3[:], c='green')
 
+    #plt.text( 2, 2, 'red= first, blue = second')
     plt.xlabel("X1")
     plt.ylabel("X2")
 
     plt.title("X1 - X2 domain")
     plt.show()
 
-generate_plot_for_discriminant_func(X1,X2,Root3,Root4,Points_X1_X2)
-generate_plot_for_discriminant_func(X1,X2,Root2,Root1,Points_X1_X3)
+
+    plt.scatter(X1_0_2[:, 0], X1_0_2[:, 1], c='red')
+    plt.scatter(X2_0_2[:, 0], X2_0_2[:, 1], c='blue')
+    plt.scatter(Points_X1_X3[:], Root1[:], c='green')
+    plt.scatter(Points_X1_X3[:], Root2[:], c='green')
+
+    plt.xlabel("X1")
+    plt.ylabel("X3")
+    plt.title("X1 - X3 domain")
+    plt.show()
+
+generate_plot_for_discriminant_func(X1,X2,Root3_ml,Root4_ml,Points_X1_X2_ml)
+generate_plot_for_discriminant_func(X1,X2,Root2_Bl,Root1_Bl,Points_X1_X3_Bl)
 
 
