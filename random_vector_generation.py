@@ -90,6 +90,11 @@ def generate_points(M,totalPoints):
     print(X.shape)
     return X
 
+print("Please give input of how many points:")
+points = input()
+X1 = generate_points(1,points)
+X2 = generate_points(2,points)
+
 # generation of Y1 and Y2
 def generation_of_Y1():
     sigma1 = generate_sigma1()  # cov of x1
@@ -138,7 +143,8 @@ def generation_of_Y2():
     print("eigen values of  Y2:", eigenvalue_Y2)
     print("eigen vectors of Y2:", eigenvector_Y2)
     return y2
-
+Y1 = generation_of_Y1()
+Y2 = generation_of_Y2()
 # generation of Z1 and Z2
 def generation_of_Z1():
 
@@ -197,6 +203,13 @@ def generation_of_Z2():
     print("eigen vectors of Z2:", eigenvector_Z2)
     return z2
 
+print("This is 2000 points of Z1:")
+Z1 = generation_of_Z1()
+print (Z1)
+
+print("This is 2000 points of Z2:")
+Z2 = generation_of_Z2()
+print (Z2)
 # generation of V1 and V2
 
 def generation_of_V1():
@@ -256,6 +269,9 @@ def generation_of_V2():
     print ("The covariance of V2:", covariance_of_V2)
 
     return mean_V2,covariance_of_V2,v2
+
+m_v1,c_v1,V1 = generation_of_V1()
+m_v2,c_v2,V2 = generation_of_V2()
 
 def slicing_points(X1, X2):
     X1_0_1 = X1[:,[0,1]] # X1 - X2

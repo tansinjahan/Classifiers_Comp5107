@@ -3,13 +3,14 @@ import matplotlib.pyplot as plt
 import random_vector_generation as gn
 
 # For question (A) (generating 200 training points)
-print("Please give input of how many points:")
-points = input()
 print("This is shape of X1:")
-X1 = gn.generate_points(1,points)
+X1 = gn.X1
+V1 = gn.V1
 
 print("This is shape of X2:")
-X2 = gn.generate_points(2,points)
+X2 = gn.X2
+V2 = gn.V2
+points = gn.points
 
 # actual/given mean and covariances for X1 and X2 training points
 actual_mean1 = gn.mean_X1
@@ -45,6 +46,7 @@ def generate_plot_for_X(plotX1,plotX2):
     plt.show()
 
 generate_plot_for_X(X1,X2)
+#generate_plot_for_X(V1,V2)
 
 # Answer to question (b)
 def estimateMean_for_ML(Name_Of_class,points):
@@ -103,7 +105,11 @@ def plot_convergence_of_mean_ML(Name_Of_class,points,actual_mean):
 array_Plot_ML_ConvergeMean_X1 = plot_convergence_of_mean_ML(X1,points,actual_mean1)
 array_Plot_ML_ConvergeMean_X2 = plot_convergence_of_mean_ML(X2,points,actual_mean2)
 
+plt.xlabel("Points in class X1 points(using ML)")
+plt.ylabel(" Estimated Mean for X1 points(using ML)")
 plot_convergences(array_Plot_ML_ConvergeMean_X1)
+plt.xlabel("Points in class X2 points(using ML)")
+plt.ylabel(" Estimated Mean for X2 points(using ML)")
 plot_convergences(array_Plot_ML_ConvergeMean_X2)
 
 def plot_convergence_of_covariance(Name_Of_class,points,actual_sigma):
@@ -123,7 +129,11 @@ def plot_convergence_of_covariance(Name_Of_class,points,actual_sigma):
 array_Plot_ML_ConvergeCovariance_X1 = plot_convergence_of_covariance(X1,points,actual_sigma1)
 array_Plot_ML_ConvergeCovariance_X2 = plot_convergence_of_covariance(X2,points,actual_sigma2)
 
+plt.xlabel("Points in class X1(using ML)")
+plt.ylabel(" Estimated Covariance for X1 points(using ML)")
 plot_convergences(array_Plot_ML_ConvergeCovariance_X1)
+plt.xlabel("Points in class X2 points(using ML)")
+plt.ylabel(" Estimated Covariance for X2 points(using ML)")
 plot_convergences(array_Plot_ML_ConvergeCovariance_X2)
 
 def estimateMean_for_Bayesian(Name_of_class,points):
@@ -160,7 +170,11 @@ def plot_convergence_of_mean_BL(Name_Of_class,points,actual_mean):
 array_Plot_BL_ConvergeMean_X1 = plot_convergence_of_mean_BL(X1,points,actual_mean1)
 array_Plot_BL_ConvergeMean_X2 = plot_convergence_of_mean_BL(X2,points,actual_mean2)
 
+plt.xlabel("Points in class X1 points(using BL)")
+plt.ylabel(" Estimated Mean for X1 points(using BL)")
 plot_convergences(array_Plot_BL_ConvergeMean_X1)
+plt.xlabel("Points in class X2 points(using BL)")
+plt.ylabel(" Estimated Mean for X2 points(using BL)")
 plot_convergences(array_Plot_BL_ConvergeMean_X2)
 
 #Answer of part(C)
@@ -168,6 +182,7 @@ def parzen_window_calculate(Name_of_class,points,sigma):
     className = Name_of_class;
     sample_points_first = className[:, 0]
     sample_points_first = np.sort(sample_points_first)
+
     l1 = sample_points_first.size
     sample_points_second = className[:,1]
     sample_points_second = np.sort(sample_points_second)
@@ -176,9 +191,9 @@ def parzen_window_calculate(Name_of_class,points,sigma):
     sample_points_third = np.sort(sample_points_third)
     l3 = sample_points_third.size
     
-    f_x_1 = np.array([])
-    f_x_2 = np.array([])
-    f_x_3 = np.array([])
+    f_x1_first = np.array([])
+    f_x1_second = np.array([])
+    f_x1_third = np.array([])
 
     print("Please give input of which class:")
     class_type = input()
@@ -199,12 +214,18 @@ def parzen_window_calculate(Name_of_class,points,sigma):
     random_X1_third = random_X1[:,2]
     random_X1_third = np.sort(random_X1_third)
 
-    #print("random points and sample points:",random_points_first,sample_points_first)
-    del_x = 0
+    max_1 = np.max(random_X1_first)
+    max_2 = np.max(random_X1_second)
+    max_3 = np.max(random_X1_third)
+
+    #print("random points and sample points:",random_X1_first,sample_points_first)
+    mean_parzen = np.array([])
+    covariance_parzen = np.array([])
     ex_mean = 0
+    ex_cov = 0
+    j = 0;
     for i in random_X1_first:
         temp = 0
-
         for x in sample_points_first:
                 temp1 = 1.0 / (np.sqrt(2 * 3.1416) * sigma)
                 temp2 = np.power((i-x), 2)
@@ -213,11 +234,22 @@ def parzen_window_calculate(Name_of_class,points,sigma):
                 temp5 = temp4 * temp1
                 temp = temp5 + temp
         temp = temp / l1
-        del_x = temp -del_x
-        ex_mean = ex_mean + del_x * temp * i
-        print("This is expexted mean", ex_mean)
-        f_x_1 = np.append(f_x_1, temp)
 
+        if(i != max_1):
+            del_x = np.subtract(random_X1_first[j+1], random_X1_first[j])
+            ex_mean = ex_mean + del_x * temp * i
+            #print("This is expected mean", ex_mean)
+            temp_cov = np.power((i - ex_mean),2)
+            ex_cov = ex_cov+ temp_cov * temp * del_x
+            #print("This is expected covariance", ex_cov)
+            j = j+1
+        f_x1_first = np.append(f_x1_first, temp)
+
+    mean_parzen = np.append(mean_parzen, ex_mean)
+    covariance_parzen = np.append(covariance_parzen, ex_cov)
+    ex_mean = 0
+    ex_cov = 0
+    j=0
     for i in random_X1_second:
         temp = 0
         for x in sample_points_second:
@@ -228,8 +260,22 @@ def parzen_window_calculate(Name_of_class,points,sigma):
             temp5 = temp4 * temp1
             temp = temp5 + temp
         temp = temp / l2
-        f_x_2 = np.append(f_x_2, temp)
 
+        if (i != max_2):
+            del_x = np.subtract(random_X1_second[j + 1], random_X1_second[j])
+            ex_mean = ex_mean + del_x * temp * i
+            #print("This is expected mean", ex_mean)
+            temp_cov = np.power((i - ex_mean), 2)
+            ex_cov = ex_cov + temp_cov * temp * del_x
+            #print("This is expected covariance", ex_cov)
+            j = j + 1
+        f_x1_second = np.append(f_x1_second, temp)
+
+    mean_parzen = np.append(mean_parzen, ex_mean)
+    covariance_parzen = np.append(covariance_parzen, ex_cov)
+    ex_mean = 0
+    ex_cov = 0
+    j=0
     for i in random_X1_third:
         temp = 0
         for x in sample_points_third:
@@ -240,38 +286,44 @@ def parzen_window_calculate(Name_of_class,points,sigma):
             temp5 = temp4 * temp1
             temp = temp5 + temp
         temp = temp / l3
-        f_x_3 = np.append(f_x_3, temp)
 
-    return f_x_1,f_x_2,f_x_3,random_X1_first,random_X1_second,random_X1_third,random_X1
+        if (i != max_3):
+            del_x = np.subtract(random_X1_third[j + 1], random_X1_third[j])
+            ex_mean = ex_mean + del_x * temp * i
+            #print("This is expected mean", ex_mean)
+            temp_cov = np.power((i - ex_mean), 2)
+            ex_cov = ex_cov + temp_cov * temp * del_x
+            #print("This is expected covariance", ex_cov)
+            j = j + 1
+        f_x1_third = np.append(f_x1_third, temp)
 
-f_x_1,f_x_2,f_x_3,random_X1_first,random_X1_second,random_X1_third,random_points_X1 = parzen_window_calculate(X1,points,0.7)
-f_x2_1,f_x2_2,f_x2_3,random_X2_first,random_X2_second,random_X2_third,random_points_X2 = parzen_window_calculate(X2,points,0.5)
-m1_X1 = np.argmax(f_x_1)
-m2_X1 = np.argmax(f_x_2)
-m3_X1 = np.argmax(f_x_3)
+    mean_parzen = np.append(mean_parzen, ex_mean)
+    covariance_parzen = np.append(covariance_parzen, ex_cov)
 
-m1_X2 = np.argmax(f_x2_1)
-m2_X2 = np.argmax(f_x2_2)
-m3_X2 = np.argmax(f_x2_3)
+    return f_x1_first,f_x1_second,f_x1_third,random_X1_first,random_X1_second,random_X1_third,mean_parzen,covariance_parzen
 
-print("This is mean for first distribution of class X1",random_X1_first[m1_X1])
-print("This is Mean for second distribution of class X1", random_X1_second[m2_X1])
-print("This is Mean for third distribution of class X1", random_X1_third[m3_X1])
-
-plt.scatter(random_X1_first,f_x_1)
-plt.scatter(random_X1_second,f_x_2)
-plt.scatter(random_X1_third,f_x_3)
+f_x1_first,f_x1_second,f_x1_third,random_X1_first,random_X1_second,random_X1_third,mean_parzen_X1,covariance_parzen_X1 = parzen_window_calculate(X1,points,0.4)
+print("This is expected mean and covariance of X1 using parzen window", mean_parzen_X1,covariance_parzen_X1)
+plt.title("Final learned distribution(class X1) of features in each dimension")
+plt.xlabel("random points for first class")
+plt.ylabel("estimated contribution for each random point")
+plt.scatter(random_X1_first,f_x1_first)
+plt.scatter(random_X1_second,f_x1_second)
+plt.scatter(random_X1_third,f_x1_third)
 plt.show()
 
-print("This is mean for first distribution of class X2",random_X2_first[m1_X2])
-print("This is Mean for second distribution of class X2", random_X2_second[m2_X2])
-print("This is Mean for third distribution of class X2", random_X2_third[m3_X2])
-
-plt.scatter(random_X2_first,f_x2_1)
-plt.scatter(random_X2_second,f_x2_2)
-plt.scatter(random_X2_third,f_x2_3)
+f_x2_first,f_x2_second,f_x2_third,random_X2_first,random_X2_second,random_X2_third,mean_parzen_X2,covariance_parzen_X2 = parzen_window_calculate(X2,points,0.5)
+print("This is expected mean and covariance of X2 using parzen window", mean_parzen_X2,covariance_parzen_X2)
+plt.title("Final learned distribution(class X2) of features in each dimension")
+plt.xlabel("random points for second class")
+plt.ylabel("estimated contribution for each random point")
+plt.scatter(random_X2_first,f_x2_first)
+plt.scatter(random_X2_second,f_x2_second)
+plt.scatter(random_X2_third,f_x2_third)
 plt.show()
 
+est_cov_parzen_X1 = np.diag(covariance_parzen_X1)
+est_cov_parzen_X2 = np.diag(covariance_parzen_X2)
 #Answer to the question no(d)
 
 #for ML - Optimal Bayes Discriminant
@@ -337,11 +389,8 @@ ML_A,ML_B,ML_C = beforeDiag_a_b_c(est_MLmean_X1,est_MLmean_X2,est_MLcovariance_X
 Root1_ml,Root2_ml,Points_X1_X3_ml = discriminant_function_X1X3(ML_A,ML_B,ML_C)
 Root3_ml,Root4_ml,Points_X1_X2_ml = discriminant_function_X1X2(ML_A,ML_B,ML_C)
 
-BL_A,BL_B,BL_C = beforeDiag_a_b_c(est_mean_BL_X1,est_mean_BL_X2,actual_sigma1,actual_sigma2)
-Root1_Bl,Root2_Bl,Points_X1_X3_Bl = discriminant_function_X1X3(BL_A,BL_B,BL_C)
-Root3_Bl,Root4_Bl,Points_X1_X2_Bl = discriminant_function_X1X2(BL_A,BL_B,BL_C)
-
-def generate_plot_for_discriminant_func(plotX1,plotX2,Root3,Root4,Points_X1_X2,Root2,Root1,Points_X1_X3):
+print("This is cov of parzen",est_cov_parzen_X1,est_cov_parzen_X2)
+def generate_plot_for_discriminant_func(plotX1,plotX2,Root3,Root4,Root1,Root2,Points_X1_X2,Points_X1_X3):
     X1_0_1, X1_0_2, X2_0_1, X2_0_2 = gn.slicing_points(plotX1, plotX2)
 
     # To plot X1_X2 domain of X
@@ -349,7 +398,7 @@ def generate_plot_for_discriminant_func(plotX1,plotX2,Root3,Root4,Points_X1_X2,R
     plt.scatter(X1_0_1[:, [0]], X1_0_1[:, [1]], c='red')
     plt.scatter(X2_0_1[:, [0]], X2_0_1[:, [1]], c='blue')
     plt.scatter(Points_X1_X2[:], Root4[:], c='green')
-    plt.scatter(Points_X1_X2[:], Root3[:], c='green')
+    #plt.scatter(Points_X1_X2[:], Root3[:], c='green')
 
     #plt.text( 2, 2, 'red= first, blue = second')
     plt.xlabel("X1")
@@ -358,18 +407,140 @@ def generate_plot_for_discriminant_func(plotX1,plotX2,Root3,Root4,Points_X1_X2,R
     plt.title("X1 - X2 domain")
     plt.show()
 
-
     plt.scatter(X1_0_2[:, 0], X1_0_2[:, 1], c='red')
     plt.scatter(X2_0_2[:, 0], X2_0_2[:, 1], c='blue')
     plt.scatter(Points_X1_X3[:], Root1[:], c='green')
-    plt.scatter(Points_X1_X3[:], Root2[:], c='green')
+    #plt.scatter(Points_X1_X3[:], Root2[:], c='green')
 
     plt.xlabel("X1")
     plt.ylabel("X3")
     plt.title("X1 - X3 domain")
     plt.show()
 
-generate_plot_for_discriminant_func(X1,X2,Root3_ml,Root4_ml,Points_X1_X2_ml)
-generate_plot_for_discriminant_func(X1,X2,Root2_Bl,Root1_Bl,Points_X1_X3_Bl)
+generate_plot_for_discriminant_func(X1,X2,Root3_ml,Root4_ml,Root1_ml,Root2_ml,Points_X1_X2_ml,Points_X1_X3_ml)
+
+BL_A,BL_B,BL_C = beforeDiag_a_b_c(est_mean_BL_X1,est_mean_BL_X2,actual_sigma1,actual_sigma2)
+Root1_Bl,Root2_Bl,Points_X1_X3_Bl = discriminant_function_X1X3(BL_A,BL_B,BL_C)
+Root3_Bl,Root4_Bl,Points_X1_X2_Bl = discriminant_function_X1X2(BL_A,BL_B,BL_C)
+
+generate_plot_for_discriminant_func(X1,X2,Root3_Bl,Root4_Bl,Root2_Bl,Root1_Bl,Points_X1_X2_Bl,Points_X1_X3_Bl)
+
+PW_A,PW_B,PW_C = beforeDiag_a_b_c(mean_parzen_X1,mean_parzen_X2,est_cov_parzen_X1,est_cov_parzen_X2)
+Root1_pw,Root2_pw,Points_X1_X3_pw = discriminant_function_X1X3(PW_A,PW_B,PW_C)
+Root3_pw,Root4_pw,Points_X1_X2_pw = discriminant_function_X1X2(PW_A,PW_B,PW_C)
+
+generate_plot_for_discriminant_func(X1,X2,Root3_pw,Root4_pw,Root2_pw,Root1_pw,Points_X1_X2_pw,Points_X1_X3_pw)
+
+# question number (e)
+def k_fold_cross_validation(X, K):
+	for k in xrange(K):
+		training = [x for i, x in enumerate(X) if i % K != k]
+		validation = [x for i, x in enumerate(X) if i % K == k]
+		yield training, validation
+
+X1_test = gn.generate_points(1,points)
+X2_test = gn.generate_points(2,points)
+true_positive_X1 = 0
+true_negative_X1= 0
+true_positive_V1 = 0
+true_negative_V1= 0
+
+true_positive_X2 = 0
+true_negative_X2= 0
+true_positive_V2 = 0
+true_negative_V2= 0
+
+def tenfold_X1(class_points,A,B,C):
+    for training_x1, validation_x1 in k_fold_cross_validation(class_points,10):
+        for i in range(0,len(validation_x1)):
+            global true_positive_X1
+            global true_negative_X1
+            value = ((np.dot(np.dot(validation_x1[i],A), np.transpose(validation_x1[i]))) + (np.dot(B, np.transpose(validation_x1[i]))) + C)
+            if value > 0:
+                true_positive_X1 = true_positive_X1 + 1
+            else:
+                true_negative_X1 = true_negative_X1 + 1
+
+    return true_positive_X1, true_negative_X1
+
+def tenfold_X2(class_points,A,B,C):
+    for training_x2, validation_x2 in k_fold_cross_validation(class_points,10):
+        for i in range(0,len(validation_x2)):
+            global true_positive_X2
+            global true_negative_X2
+            value = ((np.dot(np.dot(validation_x2[i], A), np.transpose(validation_x2[i]))) + (np.dot(B, np.transpose(validation_x2[i]))) + C)
+            if value < 0:
+                true_positive_X2 = true_positive_X2 + 1
+            else:
+                true_negative_X2 = true_negative_X2 + 1
+
+    return true_positive_X2, true_negative_X2
+
+tru_positive_x1, tru_negative_x1 = tenfold_X1(X1_test,ML_A,ML_B,ML_C)
+print ("this is true positive and negative for X1", tru_positive_x1,tru_negative_x1)
+tru_positive_x2, tru_negative_x2 = tenfold_X2(X2_test,ML_A,ML_B,ML_C)
+print ("this is true positive and negative for X2", tru_positive_x2,tru_negative_x2)
+
+def accuracy(TP1,TN1,TP2,TN2):
+    a = (TP1+TP2)
+    b = (TP1+TN1+TP2+TN2) * 1.0
+    c = float (a/b)
+    c = c * 100
+    return c
+
+print("Accuracy before diagonalization of points using estimated ML parameters:", accuracy(tru_positive_x1,tru_negative_x1,tru_positive_x2,tru_negative_x2))
+
+tru_positive_x1_bl, tru_negative_x1_bl = tenfold_X1(X1_test,BL_A,BL_B,BL_C)
+print ("this is true positive and negative for X1", tru_positive_x1_bl,tru_negative_x1_bl)
+tru_positive_x2_bl, tru_negative_x2_bl = tenfold_X2(X2_test,BL_A,BL_B,BL_C)
+print ("this is true positive and negative for X2", tru_positive_x2_bl,tru_negative_x2_bl)
+
+print("Accuracy before diagonalization of points"
+      " using estimated BL parameters:", accuracy(tru_positive_x1_bl,tru_negative_x1_bl,tru_positive_x2_bl,tru_negative_x2_bl))
+
+
+tru_positive_x1_pw, tru_negative_x1_pw = tenfold_X1(X1_test,PW_A,PW_B,PW_C)
+print ("this is true positive and negative for X1", tru_positive_x1_pw,tru_negative_x1_pw)
+tru_positive_x2_pw, tru_negative_x2_pw = tenfold_X2(X2_test,PW_A,PW_B,PW_C)
+print ("this is true positive and negative for X2", tru_positive_x2_pw,tru_negative_x2_pw)
+
+print("Accuracy before diagonalization of points"
+      " using estimated Parzen Window parameters:", accuracy(tru_positive_x1_pw,tru_negative_x1_pw,tru_positive_x2_pw,tru_negative_x2_pw))
+
+# Answer to question (e)
+print("This is V1", V1)
+est_MLmean_V1 = estimateMean_for_ML(V1,points)
+est_MLmean_V2 = estimateMean_for_ML(V2,points)
+print("This is estimated mean of class V1 for maximum likelihood", est_MLmean_V1)
+print("This is estimated mean of class V2 for maximum likelihood", est_MLmean_V2)
+
+print("This is estimated covariance of class V1 for maximum likelihood", estimateCovariance_forML(V1,points,est_MLmean_V1))
+print("This is estimated covariance of class V2 for maximum likelihood", estimateCovariance_forML(V2,points,est_MLmean_V2))
+
+est_BLmean_V1 = estimateMean_for_Bayesian(V1,points)
+est_BLmean_V2 = estimateMean_for_Bayesian(V2,points)
+print("This is estimated mean of class V1 for Bayesian learning", est_BLmean_V1)
+print("This is estimated mean of class V2 for Bayesian learning", est_BLmean_V2)
+
+
+f_v1_first,f_v1_second,f_v1_third,random_V1_first,random_V1_second,random_V1_third,mean_parzen_V1,covariance_parzen_V1 = parzen_window_calculate(V1,points,0.4)
+print("This is expected mean and covariance of V1 using parzen window", mean_parzen_V1,covariance_parzen_V1)
+plt.title("Final learned distribution(class V1) of features in each dimension")
+plt.xlabel("random points for first class")
+plt.ylabel("estimated contribution for each random point")
+plt.scatter(random_V1_first,f_v1_first)
+plt.scatter(random_V1_second,f_v1_second)
+plt.scatter(random_V1_third,f_v1_third)
+plt.show()
+
+f_v2_first,f_v2_second,f_v2_third,random_V2_first,random_V2_second,random_V2_third,mean_parzen_V2,covariance_parzen_V2 = parzen_window_calculate(V2,points,0.5)
+print("This is expected mean and covariance of V2 using parzen window", mean_parzen_V2,covariance_parzen_V2)
+plt.title("Final learned distribution(class V2) of features in each dimension")
+plt.xlabel("random points for second class")
+plt.ylabel("estimated contribution for each random point")
+plt.scatter(random_V2_first,f_v2_first)
+plt.scatter(random_V2_second,f_v2_second)
+plt.scatter(random_V2_third,f_v2_third)
+plt.show()
 
 

@@ -156,8 +156,6 @@ def generate_classifier_x1(point,transpose_point):
 
     return true_positive_X1, true_negative_X1
 
-
-
 def generate_testPoints_X1():
     test_Point_x1 = np.array([])
     for i in range(0,200):
